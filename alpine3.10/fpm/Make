@@ -1,0 +1,5 @@
+#docker build --build-arg PHP_VERSION=7.3 -t vavyskov/php:7.3-fpm-alpine3.10 .
+#docker push vavyskov/php:7.3-fpm-alpine3.10
+
+#docker build --build-arg PHP_VERSION=7.2 -t vavyskov/php:7.2-fpm-alpine3.10 .
+#docker push vavyskov/php:7.2-fpm-alpine3.10
