@@ -1,4 +1,4 @@
-# PHP
+# docker-php
 
 Supported tags and respective `Dockerfile` links:
 
