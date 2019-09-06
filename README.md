@@ -9,21 +9,21 @@ Supported tags and respective `Dockerfile` links:
 
 Extensions:
 
-- zip (stretch only)
+- zip
 - gd
-- intl (stretch only)
+- intl
 - pdo_pgsql (stretch only)
 - ldap (stretch only)
-- imagick (stretch only)
-- bcmath (stretch only)
-- exif (stretch only)
+- imagick
+- bcmath
+- exif
 - mysqli
 - pdo_mysql
 - opcache
-- mongodb (stretch only)
+- mongodb
 - uploadprogress
-- apcu (stretch only)
-- xdebug (stretch only)
+- apcu
+- xdebug
 
 Other:
 
