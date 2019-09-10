@@ -95,6 +95,22 @@ RUN curl -fsSL 'http://git.php.net/?p=pecl/php/uploadprogress.git;a=snapshot;h=9
 &&  rm -r uploadprogress-95d8a0f \
 &&  docker-php-ext-enable uploadprogress
 
+
+
+## Set recommended PHP.ini settings
+RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
+#RUN mv $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+#RUN { \
+#        echo 'opcache.max_accelerated_files=10000'; \
+#    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+#
+### Configure error logging
+#RUN { \
+#        echo 'error_log = /dev/stderr'; \
+#    } > /usr/local/etc/php/conf.d/error-logging.ini
+
+
+
 ## Composer (get path command: which composer)
 #COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
@@ -104,46 +120,48 @@ RUN apt-get update \
 &&  apt-get install -y --no-install-recommends \
         ssmtp \
 &&  rm -rf /var/lib/apt/lists/* \
-&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini
-COPY config/ssmtp.conf /etc/ssmtp
+&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
+&&  { \
+        echo 'mailhub=192.168.99.100:1025'; \
+        echo 'FromLineOverride=YES'; \
+    } > /etc/ssmtp/ssmtp.conf
+#COPY config/ssmtp.conf /etc/ssmtp
+
+## Node.js (latest)
+#RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+## Node.js (LTS)
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+&& apt-get install -y nodejs \
+## Yarn
+&& npm install -g yarn
+
+## System tools
+RUN apt-get update \
+&&  apt-get install -y --no-install-recommends \
+        git \
+        patch \
+        wget \
+        curl \
+        tar \
+        zip \
+        unzip \
+        vim \
+        mc
 
 ## Copy default data
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN apt-get update \
+&&  apt-get install -y --no-install-recommends \
         git \
 &&  git clone https://gitlab.com/vavyskov/webserver-info.git /tmp/webserver-info \
 &&  cp -R /tmp/webserver-info/src/. ${DOCUMENT_ROOT} \
 &&  rm ${DOCUMENT_ROOT}/index.html \
 &&  rm -fr /tmp/webserver-info \
-&&  apk del .build-deps
+#&&  apt-get purge -y --auto-remove \
+#        git \
+&&  rm -rf /var/lib/apt/lists/*
 
 ## Set permission (33 is the standard uid/gid for "www-data" in Debian)
 RUN chown -R 33:33 ${USER_HOME}
-
-
-
-
-
-## Set recommended PHP.ini settings
-RUN { \
-        echo 'opcache.memory_consumption=128'; \
-        echo 'opcache.interned_strings_buffer=8'; \
-        echo 'opcache.max_accelerated_files=10000'; \
-        echo 'opcache.revalidate_freq=2'; \
-        #echo 'opcache.fast_shutdown=1'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
-## Configure error logging
-RUN { \
-        echo 'error_reporting = E_ERROR | E_WARNING | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_RECOVERABLE_ERROR'; \
-        echo 'display_errors = Off'; \
-        echo 'display_startup_errors = Off'; \
-        echo 'log_errors = On'; \
-        echo 'error_log = /dev/stderr'; \
-        echo 'log_errors_max_len = 1024'; \
-        echo 'ignore_repeated_errors = On'; \
-        echo 'ignore_repeated_source = Off'; \
-        echo 'html_errors = Off'; \
-    } > /usr/local/etc/php/conf.d/error-logging.ini
 
 
 

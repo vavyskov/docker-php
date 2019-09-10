@@ -29,10 +29,10 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  apk add --no-cache \
         libpng \
 &&  docker-php-ext-install gd \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: zip
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache --update --virtual .build-deps \
         libzip-dev \
 #&&  apk add --no-cache \
 #        libzip \
@@ -48,7 +48,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
         libintl \
 #&&  docker-php-ext-configure intl --with-icu-dir=/usr/local
 &&  docker-php-ext-install intl \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: ldap
 RUN apk add --no-cache --update --virtual .build-deps \
@@ -57,7 +57,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
         libldap \
 &&  docker-php-ext-install \
         ldap \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: PosgreSQL
 RUN apk add --no-cache --update --virtual .build-deps \
@@ -68,7 +68,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  docker-php-ext-install \
         pdo_pgsql \
         pgsql \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: xdebug
 RUN apk add --no-cache --update --virtual .build-deps \
@@ -76,7 +76,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl install xdebug \
 &&  docker-php-ext-enable xdebug \
 &&  pecl clear-cache \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: apcu
 RUN apk add --no-cache --update --virtual .build-deps \
@@ -84,7 +84,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl install apcu \
 &&  docker-php-ext-enable apcu \
 &&  pecl clear-cache \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: imagick
 RUN apk add --no-cache --update --virtual .build-deps \
@@ -95,7 +95,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl install imagick \
 &&  docker-php-ext-enable imagick \
 &&  pecl clear-cache \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: mongodb
 RUN apk add --no-cache --update --virtual .build-deps \
@@ -105,14 +105,31 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl install mongodb \
 &&  docker-php-ext-enable mongodb \
 &&  pecl clear-cache \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## PHP extension: PECL uploadprogress
-RUN apk add --no-cache git \
+RUN apk add --no-cache --update --virtual .build-deps \
+        git \
 &&  git clone https://github.com/php/pecl-php-uploadprogress/ /usr/src/php/ext/uploadprogress/ \
 &&  docker-php-ext-install uploadprogress \
 &&  rm -fr /usr/src/php/ext/uploadprogress \
-&&  apk del git
+&&  apk del --purge .build-deps
+
+
+
+## Set recommended PHP.ini settings
+RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
+#RUN mv $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+#RUN { \
+#        echo 'opcache.max_accelerated_files=10000'; \
+#    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+#
+### Configure error logging
+#RUN { \
+#        echo 'error_log = /dev/stderr'; \
+#    } > /usr/local/etc/php/conf.d/error-logging.ini
+
+
 
 ## Composer (get path command: which composer)
 #COPY --from=composer /usr/bin/composer /usr/bin/composer
@@ -120,8 +137,31 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 
 ## Sendmail
 RUN apk add --no-cache ssmtp \
-&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini
-COPY config/ssmtp.conf /etc/ssmtp
+&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
+&&  { \
+        echo 'mailhub=192.168.99.100:1025'; \
+        echo 'FromLineOverride=YES'; \
+    } > /etc/ssmtp/ssmtp.conf
+#COPY config/ssmtp.conf /etc/ssmtp
+
+## Node.js
+RUN apk add --no-cache \
+        npm \
+        nodejs \
+## Yarn
+&&  npm install -g yarn
+
+## System tools
+RUN apk add --no-cache \
+        git \
+        patch \
+        wget \
+        curl \
+        tar \
+        zip \
+        unzip \
+        vim \
+        mc
 
 ## Create document root
 RUN mkdir -p "${DOCUMENT_ROOT}"
@@ -133,15 +173,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  cp -R /tmp/webserver-info/src/. ${DOCUMENT_ROOT} \
 &&  rm ${DOCUMENT_ROOT}/index.html \
 &&  rm -fr /tmp/webserver-info \
-&&  apk del .build-deps
+&&  apk del --purge .build-deps
 
 ## Set permission (82 is the standard uid/gid for "www-data" in Alpine)
 RUN chown -R 82:82 ${USER_HOME}
-
-
-
-
-
-## Set recommended PHP.ini settings
-RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-#RUN mv $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
