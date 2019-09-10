@@ -40,6 +40,7 @@ RUN savedAptMark="$(apt-mark showmanual)" \
         zip \
         gd \
         intl \
+        pgsql \
         pdo_pgsql \
         ldap \
         bcmath \
@@ -138,6 +139,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 ## System tools
 RUN apt-get update \
 &&  apt-get install -y --no-install-recommends \
+        ghostscript \
         git \
         patch \
         wget \

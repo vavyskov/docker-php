@@ -153,6 +153,7 @@ RUN apk add --no-cache \
 
 ## System tools
 RUN apk add --no-cache \
+        ghostscript \
         git \
         patch \
         wget \
