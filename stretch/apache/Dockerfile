@@ -148,7 +148,8 @@ RUN apt-get update \
         zip \
         unzip \
         vim \
-        mc
+        mc \
+&&  rm -rf /var/lib/apt/lists/*
 
 ## Copy default data
 RUN apt-get update \
