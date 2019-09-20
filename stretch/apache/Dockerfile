@@ -5,71 +5,63 @@ FROM php:${PHP_VERSION:+${PHP_VERSION}-}apache-stretch
 ENV USER_HOME=/var/www
 ENV DOCUMENT_ROOT=/var/www/html/public
 
-## PHP extensions
-## https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions
-## https://www.drupal.org/docs/8/system-requirements/php-requirements#extensions
-RUN savedAptMark="$(apt-mark showmanual)" \
-&&	apt-get update \
-&&	apt-get install -y --no-install-recommends \
-        ## php-zip
-        libzip-dev \
-        ## php-gd
+## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysqli)
+RUN docker-php-ext-install \
+        mysqli \
+        pdo_mysql
+
+## PHP extension: opcache
+RUN docker-php-ext-install \
+        opcache
+
+## PHP extension: exif
+RUN docker-php-ext-install \
+        exif
+
+## PHP extension: bcmath
+RUN docker-php-ext-install \
+        bcmath
+
+## PHP extension: gd
+RUN buildDeps=" \
+        libjpeg62-turbo-dev \
         libfreetype6-dev \
         libpng-dev \
-        ## php-intl
-        zlib1g-dev \
-        libicu-dev \
-        g++ \
-        ## php-pgsql
-        libpq-dev \
-        ## php-ldap
-        libldap2-dev \
-        ## php-imagick
-        libmagickwand-dev \
-        ## ???
-        #libjpeg-dev \
-##&& docker-php-ext-configure zip
-##        --with-libzip \
+" \
+&&  apt-get update \
+&&  apt-get install -y $buildDeps --no-install-recommends \
+&&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-configure gd \
         --with-freetype-dir=/usr \
         --with-jpeg-dir=/usr \
         --with-png-dir=/usr \
-&&  docker-php-ext-configure ldap \
-        --with-libdir=lib/x86_64-linux-gnu \
+&&  docker-php-ext-install -j $(nproc) \
+        gd \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+
+## PHP extension: zip
+RUN buildDeps=" \
+        libzip-dev \
+" \
+&&  apt-get update \
+&&  apt-get install -y $buildDeps --no-install-recommends \
+&&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-install -j $(nproc) \
         zip \
-        gd \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+
+## PHP extension: intl
+RUN buildDeps=" \
+        zlib1g-dev \
+        libicu-dev \
+        g++ \
+" \
+&&  apt-get update \
+&&  apt-get install -y $buildDeps --no-install-recommends \
+&&  rm -rf /var/lib/apt/lists/* \
+&&  docker-php-ext-install -j $(nproc) \
         intl \
-        pgsql \
-        pdo_pgsql \
-        ldap \
-        bcmath \
-        exif \
-        mysqli \
-        pdo_mysql \
-        opcache \
-&&  pecl install \
-        imagick \
-        mongodb \
-        apcu \
-        xdebug \
-&&  docker-php-ext-enable \
-        imagick \
-        mongodb \
-        apcu \
-        xdebug \
-# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-&&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
-&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-        | awk '/=>/ { print $3 }' \
-        | sort -u \
-        | xargs -r dpkg-query -S \
-        | cut -d: -f1 \
-        | sort -u \
-        | xargs -rt apt-mark manual \
-&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-&&  rm -rf /var/lib/apt/lists/*
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 ## ICU - intl requirements for Symfony
 ## Debian is out of date, and Symfony expects the latest - so build from source, unless a better alternative exists(?)
@@ -82,7 +74,60 @@ RUN savedAptMark="$(apt-mark showmanual)" \
 #&&  docker-php-ext-configure intl --with-icu-dir=/usr/local \
 #&&  docker-php-ext-install intl
 
-## Build and install the Uploadprogress PHP extension.
+## PHP extension: ldap
+RUN buildDeps=" \
+        libldap2-dev \
+" \
+&&  apt-get update \
+&&  apt-get install -y $buildDeps --no-install-recommends \
+&&  rm -rf /var/lib/apt/lists/* \
+&&  docker-php-ext-configure ldap \
+        --with-libdir=lib/x86_64-linux-gnu \
+&&  docker-php-ext-install -j $(nproc) \
+        ldap \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+
+## PHP extension: pgsql
+RUN apt-get update \
+&&  apt-get install -y --no-install-recommends \
+        libpq-dev \
+&&  docker-php-ext-install -j $(nproc) \
+        pgsql \
+        pdo_pgsql \
+&&  rm -rf /var/lib/apt/lists/*
+
+## PHP extension: imagick
+RUN apt-get update \
+&&  apt-get install -y --no-install-recommends \
+        libmagickwand-dev \
+&&  rm -rf /var/lib/apt/lists/* \
+&&  pecl install \
+        imagick \
+&&  docker-php-ext-enable \
+        imagick
+
+## PHP extension: apcu
+RUN pecl install \
+        apcu \
+&&  docker-php-ext-enable \
+        apcu
+
+## PHP extension: mongodb
+RUN pecl install \
+        mongodb \
+&&  docker-php-ext-enable \
+        mongodb
+
+## PHP extension: xdebug
+RUN docker-php-ext-install \
+        mysqli \
+&&  pecl install \
+        xdebug \
+&&  docker-php-ext-enable \
+        xdebug \
+&&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/php.ini
+
+## PHP extension: uploadprogress
 ## See http://git.php.net/?p=pecl/php/uploadprogress.git
 RUN curl -fsSL 'http://git.php.net/?p=pecl/php/uploadprogress.git;a=snapshot;h=95d8a0fd4554e10c215d3ab301e901bd8f99c5d9;sf=tgz' -o php-uploadprogress.tar.gz \
 &&  tar -xzf php-uploadprogress.tar.gz \
@@ -176,10 +221,6 @@ COPY config/apache-dev.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite expires
 #RUN if command -v a2enmod; then a2enmod rewrite;
 #RUN if command -v expires; then a2enmod expires;
-
-
-
-
 
 EXPOSE 80
 

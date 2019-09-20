@@ -59,7 +59,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
         ldap \
 &&  apk del --purge .build-deps
 
-## PHP extension: PosgreSQL
+## PHP extension: pgsql
 RUN apk add --no-cache --update --virtual .build-deps \
         postgresql-dev \
         #postgresql-client \
@@ -68,22 +68,6 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  docker-php-ext-install \
         pdo_pgsql \
         pgsql \
-&&  apk del --purge .build-deps
-
-## PHP extension: xdebug
-RUN apk add --no-cache --update --virtual .build-deps \
-        ${PHPIZE_DEPS} \
-&&  pecl install xdebug \
-&&  docker-php-ext-enable xdebug \
-&&  pecl clear-cache \
-&&  apk del --purge .build-deps
-
-## PHP extension: apcu
-RUN apk add --no-cache --update --virtual .build-deps \
-        ${PHPIZE_DEPS} \
-&&  pecl install apcu \
-&&  docker-php-ext-enable apcu \
-&&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
 ## PHP extension: imagick
@@ -97,6 +81,14 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
+## PHP extension: apcu
+RUN apk add --no-cache --update --virtual .build-deps \
+        ${PHPIZE_DEPS} \
+&&  pecl install apcu \
+&&  docker-php-ext-enable apcu \
+&&  pecl clear-cache \
+&&  apk del --purge .build-deps
+
 ## PHP extension: mongodb
 RUN apk add --no-cache --update --virtual .build-deps \
         ${PHPIZE_DEPS} \
@@ -107,7 +99,16 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
-## PHP extension: PECL uploadprogress
+## PHP extension: xdebug
+RUN apk add --no-cache --update --virtual .build-deps \
+        ${PHPIZE_DEPS} \
+&&  pecl install xdebug \
+&&  docker-php-ext-enable xdebug \
+&&  pecl clear-cache \
+&&  apk del --purge .build-deps \
+&&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/php.ini
+
+## PHP extension: uploadprogress
 RUN apk add --no-cache --update --virtual .build-deps \
         git \
 &&  git clone https://github.com/php/pecl-php-uploadprogress/ /usr/src/php/ext/uploadprogress/ \
