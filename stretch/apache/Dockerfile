@@ -24,45 +24,69 @@ RUN echo "PHP extension: bcmath" \
         bcmath
 
 RUN echo "PHP extension: gd" \
-&&  buildDeps=" \
+&&  savedAptMark="$(apt-mark showmanual)" \
+&&	apt-get update \
+&&	apt-get install -y --no-install-recommends \
         libjpeg62-turbo-dev \
         libfreetype6-dev \
         libpng-dev \
-" \
-&&  apt-get update \
-&&  apt-get install -y $buildDeps --no-install-recommends \
-&&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-configure gd \
         --with-freetype-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
         --with-png-dir=/usr/include/ \
 &&  docker-php-ext-install -j $(nproc) \
         gd \
-&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "PHP extension: zip" \
-&&  buildDeps=" \
+&&  savedAptMark="$(apt-mark showmanual)" \
+&&	apt-get update \
+&&	apt-get install -y --no-install-recommends \
         libzip-dev \
-" \
-&&  apt-get update \
-&&  apt-get install -y $buildDeps --no-install-recommends \
-&&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-install -j $(nproc) \
         zip \
-&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "PHP extension: intl" \
-&&  buildDeps=" \
+&&  savedAptMark="$(apt-mark showmanual)" \
+&&	apt-get update \
+&&	apt-get install -y --no-install-recommends \
         zlib1g-dev \
         libicu-dev \
         g++ \
-" \
-&&  apt-get update \
-&&  apt-get install -y $buildDeps --no-install-recommends \
-&&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-install -j $(nproc) \
         intl \
-&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /var/lib/apt/lists/*
 
 ## ICU - intl requirements for Symfony
 ## Debian is out of date, and Symfony expects the latest - so build from source, unless a better alternative exists(?)
@@ -76,57 +100,129 @@ RUN echo "PHP extension: intl" \
 #&&  docker-php-ext-install intl
 
 RUN echo "PHP extension: ldap" \
-&&  buildDeps=" \
+&&  savedAptMark="$(apt-mark showmanual)" \
+&&	apt-get update \
+&&	apt-get install -y --no-install-recommends \
         libldap2-dev \
-" \
-&&  apt-get update \
-&&  apt-get install -y $buildDeps --no-install-recommends \
-&&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-configure ldap \
         --with-libdir=lib/x86_64-linux-gnu \
 &&  docker-php-ext-install -j $(nproc) \
         ldap \
-&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "PHP extension: pgsql pdo_pgsql" \
-&&  apt-get update \
-&&  apt-get install -y --no-install-recommends \
+&&  savedAptMark="$(apt-mark showmanual)" \
+&&	apt-get update \
+&&	apt-get install -y --no-install-recommends \
         libpq-dev \
 &&  docker-php-ext-install -j $(nproc) \
         pgsql \
         pdo_pgsql \
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
 &&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "PHP extension: imagick" \
-&&  apt-get update \
-&&  apt-get install -y --no-install-recommends \
+&&  savedAptMark="$(apt-mark showmanual)" \
+&&	apt-get update \
+&&	apt-get install -y --no-install-recommends \
         libmagickwand-dev \
-&&  rm -rf /var/lib/apt/lists/* \
 &&  pecl install \
         imagick \
 &&  docker-php-ext-enable \
-        imagick
+        imagick \
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /tmp/* \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "PHP extension: apcu" \
+&&  savedAptMark="$(apt-mark showmanual)" \
 &&  pecl install \
         apcu \
 &&  docker-php-ext-enable \
-        apcu
+        apcu \
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /tmp/* \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "PHP extension: mongodb" \
+&&  savedAptMark="$(apt-mark showmanual)" \
 &&  pecl install \
         mongodb \
 &&  docker-php-ext-enable \
-        mongodb
+        mongodb \
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /tmp/* \
+&&  rm -rf /var/lib/apt/lists/*
 
-RUN echo "PHP extension:  xdebug" \
-&&  docker-php-ext-install \
-        mysqli \
+RUN echo "PHP extension: xdebug" \
+&&  savedAptMark="$(apt-mark showmanual)" \
 &&  pecl install \
         xdebug \
 &&  docker-php-ext-enable \
         xdebug \
+&&  apt-mark auto '.*' > /dev/null \
+&&	apt-mark manual $savedAptMark \
+&&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual \
+&&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+&&  rm -rf /tmp/* \
+&&  rm -rf /var/lib/apt/lists/* \
 &&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/php.ini
+
+
+
+
 
 ## See http://git.php.net/?p=pecl/php/uploadprogress.git
 RUN echo "PHP extension: uploadprogress" \
@@ -141,6 +237,8 @@ RUN echo "PHP extension: uploadprogress" \
     ) \
 &&  rm -r uploadprogress-95d8a0f \
 &&  docker-php-ext-enable uploadprogress
+
+
 
 
 
@@ -166,21 +264,22 @@ RUN echo "Sendmail" \
 &&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         ssmtp \
-&&  rm -rf /var/lib/apt/lists/* \
 &&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
 &&  { \
         echo 'mailhub=192.168.99.100:1025'; \
         echo 'FromLineOverride=YES'; \
-    } > /etc/ssmtp/ssmtp.conf
-#COPY config/ssmtp.conf /etc/ssmtp
+    } > /etc/ssmtp/ssmtp.conf \
+&&  rm -rf /var/lib/apt/lists/*
+COPY config/ssmtp.conf /etc/ssmtp
 
 ## Node.js (latest)
 #RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 ## Node.js (LTS)
 RUN echo "nodejs yarn" \
 &&  curl -sL https://deb.nodesource.com/setup_10.x | bash - \
-&& apt-get install -y nodejs \
-&& npm install -g yarn
+&&  apt-get install -y nodejs \
+&&  npm install -g yarn \
+&&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "System tools" \
 &&  apt-get update \
@@ -228,3 +327,10 @@ EXPOSE 80
 VOLUME /var/www/html
 
 #WORKDIR /var/www/html
+
+
+
+#RUN rm -rf /tmp/*
+#RUN rm -rf /var/cache/*
+#RUN rm -rf /usr/src/*
+#RUN pecl clear-cache
