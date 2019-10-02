@@ -9,30 +9,35 @@ FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine3.10
 ENV USER_HOME=/var/www
 ENV DOCUMENT_ROOT=/var/www/html/public
 
-## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysqli)
-RUN docker-php-ext-install \
+## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
+RUN echo "PHP extension: mysqli pdo_mysql" \
+&&  docker-php-ext-install \
         mysqli \
         pdo_mysql
 
-## PHP extension: opcache
-RUN docker-php-ext-install opcache
+RUN echo "PHP extension: opcache" \
+&&  docker-php-ext-install \
+        opcache
 
-## PHP extension: exif
-RUN docker-php-ext-install exif
+RUN echo "PHP extension: exif" \
+&&  docker-php-ext-install \
+        exif
 
-## PHP extension: bcmath
-RUN docker-php-ext-install bcmath
+RUN echo "PHP extension: bcmath" \
+&&  docker-php-ext-install \
+        bcmath
 
 ## PHP extension: gd (other librarires: libjpeg-turbo-dev libwebp-dev zlib-dev libxpm-dev)
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: gd" \
+&&  apk add --no-cache --update --virtual .build-deps \
         libpng-dev \
 &&  apk add --no-cache \
         libpng \
 &&  docker-php-ext-install gd \
 &&  apk del --purge .build-deps
 
-## PHP extension: zip
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: zip" \
+&&  apk add --no-cache --update --virtual .build-deps \
         libzip-dev \
 #&&  apk add --no-cache \
 #        libzip \
@@ -40,8 +45,8 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  docker-php-ext-install zip \
 &&  apk del --purge .build-deps
 
-## PHP extension: intl
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: intl" \
+&&  apk add --no-cache --update --virtual .build-deps \
         icu-dev \
 &&  apk add --no-cache \
         icu-libs \
@@ -50,8 +55,8 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  docker-php-ext-install intl \
 &&  apk del --purge .build-deps
 
-## PHP extension: ldap
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: ldap" \
+&&  apk add --no-cache --update --virtual .build-deps \
         openldap-dev \
 &&  apk add --no-cache \
         libldap \
@@ -59,19 +64,19 @@ RUN apk add --no-cache --update --virtual .build-deps \
         ldap \
 &&  apk del --purge .build-deps
 
-## PHP extension: pgsql
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: pgsql pdo_pgsql" \
+&&  apk add --no-cache --update --virtual .build-deps \
         postgresql-dev \
         #postgresql-client \
 &&  apk add --no-cache \
         libpq \
 &&  docker-php-ext-install \
-        pdo_pgsql \
         pgsql \
+        pdo_pgsql \
 &&  apk del --purge .build-deps
 
-## PHP extension: imagick
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: imagick" \
+&&  apk add --no-cache --update --virtual .build-deps \
         ${PHPIZE_DEPS} \
         imagemagick-dev \
 &&  apk add --no-cache \
@@ -81,16 +86,16 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
-## PHP extension: apcu
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: apcu" \
+&&  apk add --no-cache --update --virtual .build-deps \
         ${PHPIZE_DEPS} \
 &&  pecl install apcu \
 &&  docker-php-ext-enable apcu \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
-## PHP extension: mongodb
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: mongodb" \
+&&  apk add --no-cache --update --virtual .build-deps \
         ${PHPIZE_DEPS} \
         #openssl-dev \
         #pcre-dev \
@@ -99,8 +104,8 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
-## PHP extension: xdebug
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension:  xdebug" \
+&&  apk add --no-cache --update --virtual .build-deps \
         ${PHPIZE_DEPS} \
 &&  pecl install xdebug \
 &&  docker-php-ext-enable xdebug \
@@ -108,8 +113,8 @@ RUN apk add --no-cache --update --virtual .build-deps \
 &&  apk del --purge .build-deps \
 &&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/php.ini
 
-## PHP extension: uploadprogress
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "PHP extension: uploadprogress" \
+&&  apk add --no-cache --update --virtual .build-deps \
         git \
 &&  git clone https://github.com/php/pecl-php-uploadprogress/ /usr/src/php/ext/uploadprogress/ \
 &&  docker-php-ext-install uploadprogress \
@@ -136,8 +141,8 @@ RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 #COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-## Sendmail
-RUN apk add --no-cache ssmtp \
+RUN echo "Sendmail" \
+&&  apk add --no-cache ssmtp \
 &&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
 &&  { \
         echo 'mailhub=192.168.99.100:1025'; \
@@ -145,15 +150,14 @@ RUN apk add --no-cache ssmtp \
     } > /etc/ssmtp/ssmtp.conf
 #COPY config/ssmtp.conf /etc/ssmtp
 
-## Node.js
-RUN apk add --no-cache \
+RUN echo "nodejs yarn" \
+&&  apk add --no-cache \
         npm \
         nodejs \
-## Yarn
 &&  npm install -g yarn
 
-## System tools
-RUN apk add --no-cache \
+RUN echo "System tools" \
+&&  apk add --no-cache \
         ghostscript \
         git \
         patch \
@@ -168,8 +172,8 @@ RUN apk add --no-cache \
 ## Create document root
 RUN mkdir -p "${DOCUMENT_ROOT}"
 
-## Copy default data
-RUN apk add --no-cache --update --virtual .build-deps \
+RUN echo "Default data" \
+&&  apk add --no-cache --update --virtual .build-deps \
         git \
 &&  git clone https://gitlab.com/vavyskov/webserver-info.git /tmp/webserver-info \
 &&  cp -R /tmp/webserver-info/src/. ${DOCUMENT_ROOT} \

@@ -5,25 +5,26 @@ FROM php:${PHP_VERSION:+${PHP_VERSION}-}apache-stretch
 ENV USER_HOME=/var/www
 ENV DOCUMENT_ROOT=/var/www/html/public
 
-## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysqli)
-RUN docker-php-ext-install \
+## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
+RUN echo "PHP extension: mysqli pdo_mysql" \
+&&  docker-php-ext-install \
         mysqli \
         pdo_mysql
 
-## PHP extension: opcache
-RUN docker-php-ext-install \
+RUN echo "PHP extension: opcache" \
+&&  docker-php-ext-install \
         opcache
 
-## PHP extension: exif
-RUN docker-php-ext-install \
+RUN echo "PHP extension: exif" \
+&&  docker-php-ext-install \
         exif
 
-## PHP extension: bcmath
-RUN docker-php-ext-install \
+RUN echo "PHP extension: bcmath" \
+&&  docker-php-ext-install \
         bcmath
 
-## PHP extension: gd
-RUN buildDeps=" \
+RUN echo "PHP extension: gd" \
+&&  buildDeps=" \
         libjpeg62-turbo-dev \
         libfreetype6-dev \
         libpng-dev \
@@ -32,15 +33,15 @@ RUN buildDeps=" \
 &&  apt-get install -y $buildDeps --no-install-recommends \
 &&  rm -rf /var/lib/apt/lists/* \
 &&  docker-php-ext-configure gd \
-        --with-freetype-dir=/usr \
-        --with-jpeg-dir=/usr \
-        --with-png-dir=/usr \
+        --with-freetype-dir=/usr/include/ \
+        --with-jpeg-dir=/usr/include/ \
+        --with-png-dir=/usr/include/ \
 &&  docker-php-ext-install -j $(nproc) \
         gd \
 &&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
-## PHP extension: zip
-RUN buildDeps=" \
+RUN echo "PHP extension: zip" \
+&&  buildDeps=" \
         libzip-dev \
 " \
 &&  apt-get update \
@@ -50,8 +51,8 @@ RUN buildDeps=" \
         zip \
 &&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
-## PHP extension: intl
-RUN buildDeps=" \
+RUN echo "PHP extension: intl" \
+&&  buildDeps=" \
         zlib1g-dev \
         libicu-dev \
         g++ \
@@ -74,8 +75,8 @@ RUN buildDeps=" \
 #&&  docker-php-ext-configure intl --with-icu-dir=/usr/local \
 #&&  docker-php-ext-install intl
 
-## PHP extension: ldap
-RUN buildDeps=" \
+RUN echo "PHP extension: ldap" \
+&&  buildDeps=" \
         libldap2-dev \
 " \
 &&  apt-get update \
@@ -87,8 +88,8 @@ RUN buildDeps=" \
         ldap \
 &&  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
-## PHP extension: pgsql
-RUN apt-get update \
+RUN echo "PHP extension: pgsql pdo_pgsql" \
+&&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         libpq-dev \
 &&  docker-php-ext-install -j $(nproc) \
@@ -96,8 +97,8 @@ RUN apt-get update \
         pdo_pgsql \
 &&  rm -rf /var/lib/apt/lists/*
 
-## PHP extension: imagick
-RUN apt-get update \
+RUN echo "PHP extension: imagick" \
+&&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         libmagickwand-dev \
 &&  rm -rf /var/lib/apt/lists/* \
@@ -106,20 +107,20 @@ RUN apt-get update \
 &&  docker-php-ext-enable \
         imagick
 
-## PHP extension: apcu
-RUN pecl install \
+RUN echo "PHP extension: apcu" \
+&&  pecl install \
         apcu \
 &&  docker-php-ext-enable \
         apcu
 
-## PHP extension: mongodb
-RUN pecl install \
+RUN echo "PHP extension: mongodb" \
+&&  pecl install \
         mongodb \
 &&  docker-php-ext-enable \
         mongodb
 
-## PHP extension: xdebug
-RUN docker-php-ext-install \
+RUN echo "PHP extension:  xdebug" \
+&&  docker-php-ext-install \
         mysqli \
 &&  pecl install \
         xdebug \
@@ -127,9 +128,9 @@ RUN docker-php-ext-install \
         xdebug \
 &&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/php.ini
 
-## PHP extension: uploadprogress
 ## See http://git.php.net/?p=pecl/php/uploadprogress.git
-RUN curl -fsSL 'http://git.php.net/?p=pecl/php/uploadprogress.git;a=snapshot;h=95d8a0fd4554e10c215d3ab301e901bd8f99c5d9;sf=tgz' -o php-uploadprogress.tar.gz \
+RUN echo "PHP extension: uploadprogress" \
+&&  curl -fsSL 'http://git.php.net/?p=pecl/php/uploadprogress.git;a=snapshot;h=95d8a0fd4554e10c215d3ab301e901bd8f99c5d9;sf=tgz' -o php-uploadprogress.tar.gz \
 &&  tar -xzf php-uploadprogress.tar.gz \
 &&  rm php-uploadprogress.tar.gz \
 &&  (   cd uploadprogress-95d8a0f \
@@ -161,8 +162,8 @@ RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 #COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-## Sendmail
-RUN apt-get update \
+RUN echo "Sendmail" \
+&&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         ssmtp \
 &&  rm -rf /var/lib/apt/lists/* \
@@ -176,13 +177,13 @@ RUN apt-get update \
 ## Node.js (latest)
 #RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 ## Node.js (LTS)
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+RUN echo "nodejs yarn" \
+&&  curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 && apt-get install -y nodejs \
-## Yarn
 && npm install -g yarn
 
-## System tools
-RUN apt-get update \
+RUN echo "System tools" \
+&&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         ghostscript \
         git \
@@ -196,8 +197,8 @@ RUN apt-get update \
         mc \
 &&  rm -rf /var/lib/apt/lists/*
 
-## Copy default data
-RUN apt-get update \
+RUN echo "Default data" \
+&&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         git \
 &&  git clone https://gitlab.com/vavyskov/webserver-info.git /tmp/webserver-info \

@@ -9,23 +9,39 @@ Supported tags and respective `Dockerfile` links:
 
 Extensions:
 
-- zip
-- gd
-- intl
-- pdo_pgsql (stretch only)
-- ldap (stretch only)
-- imagick
-- bcmath
-- exif
 - mysqli
 - pdo_mysql
 - opcache
-- mongodb
-- uploadprogress
+- exif
+- bcmath
+- gd
+- zip
+- intl
+- ldap
+- pgsql
+- pdo_pgsql
+- imagick
 - apcu
+- mongodb
 - xdebug
+- uploadprogress
 
 Other:
 
 - composer
 - sendmail: ssmtp
+- nodejs
+- yarn
+
+System tools:
+
+- ghostscript
+- git
+- patch
+- wget
+- curl
+- tar
+- zip
+- unzip
+- vim
+- mc
