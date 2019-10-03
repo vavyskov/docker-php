@@ -41,7 +41,7 @@ System tools:
 
 ToDo
 
-- sendmail IP and port as environment
+- sendmail IP and port as variables
 
 Tips:
 
