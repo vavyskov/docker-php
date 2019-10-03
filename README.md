@@ -36,12 +36,15 @@ Other:
 System tools:
 
 - ghostscript
-- git
-- patch
-- wget
-- curl
-- tar
-- zip
-- unzip
-- vim
-- mc
+
+---
+
+ToDo
+
+- sendmail IP and port as environment
+
+Tips:
+
+- [build options](https://hub.docker.com/r/llaumgui/php/dockerfile)
+- [PHP packages](https://hub.docker.com/r/wodby/drupal-php/dockerfile/)
+- [other tips](https://hub.docker.com/r/aexchecker/docker-php/dockerfile/)

@@ -270,7 +270,7 @@ RUN echo "Sendmail" \
         echo 'FromLineOverride=YES'; \
     } > /etc/ssmtp/ssmtp.conf \
 &&  rm -rf /var/lib/apt/lists/*
-COPY config/ssmtp.conf /etc/ssmtp
+#COPY config/ssmtp.conf /etc/ssmtp
 
 ## Node.js (latest)
 #RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
@@ -285,15 +285,6 @@ RUN echo "System tools" \
 &&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
         ghostscript \
-        git \
-        patch \
-        wget \
-        curl \
-        tar \
-        zip \
-        unzip \
-        vim \
-        mc \
 &&  rm -rf /var/lib/apt/lists/*
 
 RUN echo "Default data" \

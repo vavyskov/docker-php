@@ -1,7 +1,3 @@
-## https://hub.docker.com/r/llaumgui/php/dockerfile
-## https://hub.docker.com/r/aexchecker/docker-php/dockerfile/
-## https://hub.docker.com/r/wodby/drupal-php/dockerfile/
-
 ARG PHP_VERSION=7.2
 
 FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine3.10
@@ -159,15 +155,6 @@ RUN echo "nodejs yarn" \
 RUN echo "System tools" \
 &&  apk add --no-cache \
         ghostscript \
-        git \
-        patch \
-        wget \
-        curl \
-        tar \
-        zip \
-        unzip \
-        vim \
-        mc
 
 ## Create document root
 RUN mkdir -p "${DOCUMENT_ROOT}"
