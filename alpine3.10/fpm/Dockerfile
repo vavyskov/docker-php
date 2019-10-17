@@ -14,6 +14,7 @@ RUN echo "PHP extension: mysqli pdo_mysql" \
 RUN echo "PHP extension: opcache" \
 &&  docker-php-ext-install \
         opcache
+#COPY config/opcache.ini /usr/local/etc/php/conf.d/
 
 RUN echo "PHP extension: exif" \
 &&  docker-php-ext-install \
@@ -107,7 +108,7 @@ RUN echo "PHP extension:  xdebug" \
 &&  docker-php-ext-enable xdebug \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps \
-&&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/php.ini
+&&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN echo "PHP extension: uploadprogress" \
 &&  apk add --no-cache --update --virtual .build-deps \
@@ -130,6 +131,7 @@ RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 #RUN { \
 #        echo 'error_log = /dev/stderr'; \
 #    } > /usr/local/etc/php/conf.d/error-logging.ini
+COPY config/php-development.ini /usr/local/etc/php/conf.d/
 
 
 
@@ -154,7 +156,7 @@ RUN echo "nodejs yarn" \
 
 RUN echo "System tools" \
 &&  apk add --no-cache \
-        ghostscript \
+        ghostscript
 
 ## Create document root
 RUN mkdir -p "${DOCUMENT_ROOT}"
