@@ -1,5 +1,8 @@
 #!/bin/bash
 
+docker build --build-arg PHP_VERSION=7.4 -t vavyskov/php:7.4-apache-stretch .
+docker push vavyskov/php:7.4-apache-stretch
+
 docker build --build-arg PHP_VERSION=7.3 -t vavyskov/php:7.3-apache-stretch .
 docker push vavyskov/php:7.3-apache-stretch
 
