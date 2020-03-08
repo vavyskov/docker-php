@@ -1,6 +1,6 @@
-ARG PHP_VERSION=7.3
+ARG PHP_VERSION=7.4
 
-FROM php:${PHP_VERSION:+${PHP_VERSION}-}apache-stretch
+FROM php:${PHP_VERSION:+${PHP_VERSION}-}apache-buster
 
 ENV USER_HOME=/var/www
 ENV DOCUMENT_ROOT=/var/www/html/public

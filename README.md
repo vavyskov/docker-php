@@ -2,8 +2,10 @@
 
 Supported tags and respective `Dockerfile` links:
 
-- [`7.4-apache-stretch`](https://github.com/vavyskov/docker-php/tree/master/stretch/apache)
-- [`7.4-fpm-alpine3.10`](https://github.com/vavyskov/docker-php/tree/master/alpine3.10/fpm)
+- [`7.4-apache-buster`](https://github.com/vavyskov/docker-php/tree/master/buster/apache)
+- [`7.4-fpm-alpine3.11`](https://github.com/vavyskov/docker-php/tree/master/alpine3.11/fpm)
+- [`7.3-apache-buster`](https://github.com/vavyskov/docker-php/tree/master/buster/apache)
+- [`7.3-fpm-alpine3.11`](https://github.com/vavyskov/docker-php/tree/master/alpine3.11/fpm)
 - [`7.3-apache-stretch`](https://github.com/vavyskov/docker-php/tree/master/stretch/apache)
 - [`7.3-fpm-alpine3.10`](https://github.com/vavyskov/docker-php/tree/master/alpine3.10/fpm)
 - [`7.2-apache-stretch`](https://github.com/vavyskov/docker-php/tree/master/stretch/apache)
