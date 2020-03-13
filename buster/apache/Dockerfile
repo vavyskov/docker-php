@@ -31,10 +31,14 @@ RUN echo "PHP extension: gd" \
         libjpeg62-turbo-dev \
         libfreetype6-dev \
         libpng-dev \
+        libwebp-dev \
 &&  docker-php-ext-configure gd \
-        --with-freetype-dir=/usr/include/ \
-        --with-jpeg-dir=/usr/include/ \
-        --with-png-dir=/usr/include/ \
+        --with-freetype=/usr/include/ \
+        --with-jpeg=/usr/include/ \
+        #--with-png=/usr/include/ \
+        #--with-xpm=/usr/include/ \
+        --with-webp=/usr/include/ \
+        #--enable-gd-jis-conv=/usr/include/ \
 &&  docker-php-ext-install -j $(nproc) \
         gd \
 &&  apt-mark auto '.*' > /dev/null \
@@ -265,14 +269,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 RUN echo "Sendmail" \
 &&  apt-get update \
 &&  apt-get install -y --no-install-recommends \
-        ssmtp \
-&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
+        msmtp \
+&&  echo 'sendmail_path = /usr/sbin/msmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
 &&  { \
-        echo 'mailhub=192.168.99.100:1025'; \
-        echo 'FromLineOverride=YES'; \
-    } > /etc/ssmtp/ssmtp.conf \
+        echo 'host 192.168.99.100'; \
+        echo 'port 1025'; \
+    } > /etc/msmtprc \
 &&  rm -rf /var/lib/apt/lists/*
-#COPY config/ssmtp.conf /etc/ssmtp
+#COPY config/msmtprc /etc
 
 ## Node.js (latest)
 #RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
