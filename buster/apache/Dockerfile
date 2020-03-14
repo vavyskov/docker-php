@@ -32,17 +32,24 @@ RUN echo "PHP extension: gd" \
         libfreetype6-dev \
         libpng-dev \
         libwebp-dev \
-&&  docker-php-ext-configure gd \
-        --with-freetype=/usr/include/ \
-        --with-jpeg=/usr/include/ \
-        #--with-png=/usr/include/ \
-        #--with-xpm=/usr/include/ \
-        --with-webp=/usr/include/ \
-        #--enable-gd-jis-conv=/usr/include/ \
+&&  if [ ${PHP_VERSION} = 7.3.15 ]; then \
+        docker-php-ext-configure gd \
+            --with-freetype-dir=/usr/include/ \
+            --with-jpeg-dir=/usr/include/ \
+            --with-webp-dir=/usr/include/ \
+    ;else \
+        docker-php-ext-configure gd \
+            --with-freetype=/usr/include/ \
+            --with-jpeg=/usr/include/ \
+            #--with-png=/usr/include/ \
+            #--with-xpm=/usr/include/ \
+            #--enable-gd-jis-conv=/usr/include/ \
+            --with-webp=/usr/include/ \
+    ;fi \
 &&  docker-php-ext-install -j $(nproc) \
         gd \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -61,7 +68,7 @@ RUN echo "PHP extension: zip" \
 &&  docker-php-ext-install -j $(nproc) \
         zip \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -82,7 +89,7 @@ RUN echo "PHP extension: intl" \
 &&  docker-php-ext-install -j $(nproc) \
         intl \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -114,7 +121,7 @@ RUN echo "PHP extension: ldap" \
 &&  docker-php-ext-install -j $(nproc) \
         ldap \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -134,7 +141,7 @@ RUN echo "PHP extension: pgsql pdo_pgsql" \
         pgsql \
         pdo_pgsql \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -155,7 +162,7 @@ RUN echo "PHP extension: imagick" \
 &&  docker-php-ext-enable \
         imagick \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -174,7 +181,7 @@ RUN echo "PHP extension: apcu" \
 &&  docker-php-ext-enable \
         apcu \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -193,7 +200,7 @@ RUN echo "PHP extension: mongodb" \
 &&  docker-php-ext-enable \
         mongodb \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -212,7 +219,7 @@ RUN echo "PHP extension: xdebug" \
 &&  docker-php-ext-enable \
         xdebug \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \

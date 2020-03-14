@@ -38,7 +38,7 @@ RUN echo "PHP extension: gd" \
 &&  docker-php-ext-install -j $(nproc) \
         gd \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -57,7 +57,7 @@ RUN echo "PHP extension: zip" \
 &&  docker-php-ext-install -j $(nproc) \
         zip \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -78,7 +78,7 @@ RUN echo "PHP extension: intl" \
 &&  docker-php-ext-install -j $(nproc) \
         intl \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -110,7 +110,7 @@ RUN echo "PHP extension: ldap" \
 &&  docker-php-ext-install -j $(nproc) \
         ldap \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -130,7 +130,7 @@ RUN echo "PHP extension: pgsql pdo_pgsql" \
         pgsql \
         pdo_pgsql \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -151,7 +151,7 @@ RUN echo "PHP extension: imagick" \
 &&  docker-php-ext-enable \
         imagick \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -170,7 +170,7 @@ RUN echo "PHP extension: apcu" \
 &&  docker-php-ext-enable \
         apcu \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -189,7 +189,7 @@ RUN echo "PHP extension: mongodb" \
 &&  docker-php-ext-enable \
         mongodb \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
@@ -208,7 +208,7 @@ RUN echo "PHP extension: xdebug" \
 &&  docker-php-ext-enable \
         xdebug \
 &&  apt-mark auto '.*' > /dev/null \
-&&	apt-mark manual $savedAptMark \
+&&	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; } \
 &&	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
         | awk '/=>/ { print $3 }' \
         | sort -u \
