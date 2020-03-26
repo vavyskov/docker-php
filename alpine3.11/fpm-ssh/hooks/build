@@ -1,7 +1,6 @@
 #!/bin/bash
 
 docker build --build-arg PHP_VERSION=7.4 -t vavyskov/php:7.4-fpm-ssh-alpine3.11 .
-docker tag vavyskov/php:7.4-fpm-ssh-alpine3.11 vavyskov/php:7.4-fpm-ssh-alpine3.11
 docker push vavyskov/php:7.4-fpm-ssh-alpine3.11
 
 #docker build --build-arg PHP_VERSION=7.3 -t vavyskov/php:7.3-fpm-ssh-alpine3.11 .
