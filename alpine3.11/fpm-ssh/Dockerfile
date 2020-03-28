@@ -3,7 +3,7 @@ ARG PHP_VERSION=7.4
 FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine3.11
 
 ENV IMAGE_MODE=dev
-#ENV DOCUMENT_ROOT=/var/www/html/public
+ENV DOCUMENT_ROOT=/var/www/html/public
 ENV SSH_HOME=/var/www
 ENV SSH_USER=ssh
 ENV SSH_PASSWORD=ssh
@@ -179,15 +179,15 @@ RUN echo "Symfony CLI" \
 ## Create document root
 #RUN mkdir -p "${DOCUMENT_ROOT}"
 
-#RUN echo "Default data" \
-#&&  apk add --no-cache --virtual .build-deps \
-#        git \
-#&&  git clone https://gitlab.com/vavyskov/webserver-info.git /tmp/webserver-info \
-#&&  cp -R /tmp/webserver-info/src/. ${DOCUMENT_ROOT} \
-##&&  rm ${DOCUMENT_ROOT}/index.html \
-#&&  rm -fr /tmp/webserver-info \
-#&&  apk del --purge .build-deps \
-#&&  chown -R 82:82 ${DOCUMENT_ROOT}
+RUN echo "Default data" \
+&&  apk add --no-cache --virtual .build-deps \
+        git \
+&&  git clone https://gitlab.com/vavyskov/webserver-info.git /tmp/webserver-info \
+&&  cp -R /tmp/webserver-info/src/. ${DOCUMENT_ROOT} \
+#&&  rm ${DOCUMENT_ROOT}/index.html \
+&&  rm -fr /tmp/webserver-info \
+&&  apk del --purge .build-deps \
+&&  chown -R 82:82 ${DOCUMENT_ROOT}
 
 ## Set permission (82 is the standard uid/gid for "www-data" in Alpine)
 #RUN chown -R 82:82 ${SSH_HOME}
