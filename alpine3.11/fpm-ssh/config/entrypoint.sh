@@ -134,7 +134,12 @@ else
 fi
 
 ## Sendmail
-if [ -n "${SMTP_MAILHUB}" ] && [ -n "${SMTP_MAILHUB_PORT}" ]; then
+if [ -n "${SMTP_MAILHUB}" ] && [ -n "${SMTP_MAILHUB_PORT}" ] && [ -z "${SMTP_USER}" ]; then
+    { \
+        echo "mailhub=${SMTP_MAILHUB}:${SMTP_MAILHUB_PORT}"; \
+        echo 'FromLineOverride=YES'; \
+    } > /etc/ssmtp/ssmtp.conf
+else
     { \
         #echo 'root=postmaster@project-name.local'; \
         echo "mailhub=${SMTP_MAILHUB}:${SMTP_MAILHUB_PORT}"; \
