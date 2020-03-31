@@ -14,12 +14,12 @@ ENV SMTP_MAILHUB="192.168.99.100"
 ENV SMTP_MAILHUB_PORT="1025"
 ENV SMTP_DOMAIN="vavyskov.cz"
 ENV SMTP_HOSTNAME_FULL="fullhostname.vavyskov.cz"
-ENV SMTP_USER="user"
+ENV SMTP_USER=${UNSET}
 ENV SMTP_PASSWORD="password"
 ENV SMTP_METHOD="LOGIN"
 
 ## Proxy server example: "http://user:password@proxy.example.com:8080"
-ENV PROXY_SERVER=""
+ENV PROXY_SERVER=${UNSET}
 
 ## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
 RUN echo "PHP extension: mysqli pdo_mysql" \
