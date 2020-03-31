@@ -134,15 +134,36 @@ else
 fi
 
 ## Sendmail
-{ \
-    echo "mailhub=${SMTP_IP}:${SMTP_PORT}"; \
-    echo 'FromLineOverride=YES'; \
-    #echo 'hostname=project-name.local'; \
-    #echo 'root=postmaster@project-name.local'; \
-    #echo 'rewriteDomain=project-name.local'; \
-    #echo 'UseTLS=YES'; \
-    #echo 'UseSTARTTLS=YES'; \
-} > /etc/ssmtp/ssmtp.conf
+if [ -n "${SMTP_MAILHUB}" ] && [ -n "${SMTP_MAILHUB_PORT}" ]; then
+    { \
+        #echo 'root=postmaster@project-name.local'; \
+        echo "mailhub=${SMTP_MAILHUB}:${SMTP_MAILHUB_PORT}"; \
+        echo "rewriteDomain=${SMTP_DOMAIN}"; \
+        echo "hostname=${SMTP_HOSTNAME_FULL}"; \
+        #echo 'TLS_CA_FILE=/etc/ssl/certs/ca-certificates.crt'; \
+        #echo 'UseTLS=YES'; \
+        #echo 'UseSTARTTLS=YES'; \
+        echo "AuthUser=${SMTP_USER}"; \
+        echo "AuthPass=${SMTP_PASSWORD}"; \
+        echo "AuthMethod=${SMTP_METHOD}"; \
+        echo 'FromLineOverride=YES'; \
+    } > /etc/ssmtp/ssmtp.conf
+fi
+
+## Proxy (env | grep proxy)
+if [ -n "${PROXY_SERVER}" ]; then
+    { \
+        echo '#!/bin/sh'; \
+        echo "export http_proxy='${PROXY_SERVER}'"; \
+        echo "export https_proxy='${PROXY_SERVER}'"; \
+        echo "export ftp_proxy='${PROXY_SERVER}'"; \
+        echo '/usr/bin/wget $@'; \
+        echo 'unset http_proxy'; \
+        echo 'unset https_proxy'; \
+        echo 'unset ftp_proxy'; \
+    } > /usr/local/bin/composer
+    chmod +x /usr/local/bin/composer
+fi
 
 ## Git
 { \
