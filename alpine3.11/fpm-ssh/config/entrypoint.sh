@@ -56,11 +56,22 @@ if [ -n "${SSH_USER}" ] && [ -n "${SSH_PASSWORD}" ]; then
     sed -i "s/user = ${WEB_USER}/user = ${SSH_USER}/g" /usr/local/etc/php-fpm.d/www.conf
     sed -i "s/group = ${WEB_GROUP}/group = ${SSH_GROUP}/g" /usr/local/etc/php-fpm.d/www.conf
 
-    ## Shell configuration (Drupal)
+    ## Shell configuration - Drupal
     { \
         echo 'export PATH="$PATH:/var/www/html/vendor/bin"'; \
     } >> "${SSH_HOME}"/.bashrc
     chown "${SSH_USER}":"${SSH_GROUP}" "${SSH_HOME}"/.bashrc
+
+#    ## Shell configuration - Proxy (env | grep proxy)
+#    if [ -n "${PROXY_SERVER}" ]; then
+#        ## Shell configuration (Proxy)
+#        { \
+#            echo "export http_proxy='${PROXY_SERVER}'"; \
+#            echo "export https_proxy='${PROXY_SERVER}'"; \
+#            echo "export ftp_proxy='${PROXY_SERVER}'"; \
+#        } >> "${SSH_HOME}"/.bashrc
+#        chown "${SSH_USER}":"${SSH_GROUP}" "${SSH_HOME}"/.bashrc
+#    fi
 
 fi
 
@@ -141,13 +152,13 @@ if [ -n "${SMTP_MAILHUB}" ] && [ -n "${SMTP_MAILHUB_PORT}" ] && [ -z "${SMTP_USE
     } > /etc/ssmtp/ssmtp.conf
 else
     { \
-        #echo 'root=postmaster@project-name.local'; \
+        echo '# root=postmaster@project-name.local'; \
         echo "mailhub=${SMTP_MAILHUB}:${SMTP_MAILHUB_PORT}"; \
         echo "rewriteDomain=${SMTP_DOMAIN}"; \
         echo "hostname=${SMTP_HOSTNAME_FULL}"; \
-        #echo 'TLS_CA_FILE=/etc/ssl/certs/ca-certificates.crt'; \
-        #echo 'UseTLS=YES'; \
-        #echo 'UseSTARTTLS=YES'; \
+        echo '# TLS_CA_FILE=/etc/ssl/certs/ca-certificates.crt'; \
+        echo '# UseTLS=YES'; \
+        echo '# UseSTARTTLS=YES'; \
         echo "AuthUser=${SMTP_USER}"; \
         echo "AuthPass=${SMTP_PASSWORD}"; \
         echo "AuthMethod=${SMTP_METHOD}"; \
@@ -157,17 +168,20 @@ fi
 
 ## Proxy (env | grep proxy)
 if [ -n "${PROXY_SERVER}" ]; then
-    { \
-        echo '#!/bin/sh'; \
-        echo "export http_proxy='${PROXY_SERVER}'"; \
-        echo "export https_proxy='${PROXY_SERVER}'"; \
-        echo "export ftp_proxy='${PROXY_SERVER}'"; \
-        echo '/usr/bin/wget $@'; \
-        echo 'unset http_proxy'; \
-        echo 'unset https_proxy'; \
-        echo 'unset ftp_proxy'; \
-    } > /usr/local/bin/composer
-    chmod +x /usr/local/bin/composer
+    for item in wget composer npm yarn
+    do
+        { \
+            echo '#!/bin/sh'; \
+            echo "export http_proxy='${PROXY_SERVER}'"; \
+            echo "export https_proxy='${PROXY_SERVER}'"; \
+            echo "export ftp_proxy='${PROXY_SERVER}'"; \
+            echo "/usr/bin/$item \$@"; \
+            echo 'unset http_proxy'; \
+            echo 'unset https_proxy'; \
+            echo 'unset ftp_proxy'; \
+        } > /usr/local/bin/$item
+        chmod +x /usr/local/bin/$item
+    done
 fi
 
 ## Git
