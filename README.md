@@ -46,12 +46,14 @@ System tools:
 
 ToDo
 
+- Change variable notation by "alpine.3.11/fpm-ssh"
 - Sendmail IP and port as variables:
     - [x] alpine3.11/fpm-ssh
     - [ ] alpine3.11/fpm, alpine3.10, buster, stretch
 - Docker image mode (dev | prod):
     - [x] alpine3.11/fpm-ssh
     - [ ] alpine3.11/fpm, alpine3.10, buster, stretch
+- [msmtp](https://wiki.alpinelinux.org/wiki/Relay_email_to_gmail_(msmtp,_mailx,_sendmail)
 
 Tips:
 
