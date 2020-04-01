@@ -168,19 +168,19 @@ fi
 
 ## Proxy (env | grep proxy)
 if [ -n "${PROXY_SERVER}" ]; then
-    for item in wget composer npm yarn
+    for i in wget composer npm yarn
     do
         { \
             echo '#!/bin/sh'; \
             echo "export http_proxy='${PROXY_SERVER}'"; \
             echo "export https_proxy='${PROXY_SERVER}'"; \
             echo "export ftp_proxy='${PROXY_SERVER}'"; \
-            echo "/usr/bin/$item \$@"; \
+            echo "/usr/bin/$i \$@"; \
             echo 'unset http_proxy'; \
             echo 'unset https_proxy'; \
             echo 'unset ftp_proxy'; \
-        } > /usr/local/bin/$item
-        chmod +x /usr/local/bin/$item
+        } > /usr/local/bin/$i
+        chmod +x /usr/local/bin/$i
     done
 fi
 
