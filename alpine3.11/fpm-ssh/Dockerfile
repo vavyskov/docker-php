@@ -3,21 +3,23 @@ ARG ALPINE_VERSION=3.11
 
 FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine${ALPINE_VERSION}
 
-ENV IMAGE_MODE="dev"
-ENV DOCUMENT_ROOT="/var/www/html/public"
-ENV SSH_HOME="/var/www"
-ENV SSH_USER="ssh"
-ENV SSH_PASSWORD="ssh"
-ENV GIT_EMAIL="my@email.com"
-ENV GIT_NAME="My Name"
-ENV SMTP_MAILHUB="192.168.99.100"
-ENV SMTP_MAILHUB_PORT="1025"
-ENV SMTP_DOMAIN="vavyskov.cz"
-ENV SMTP_HOSTNAME_FULL="fullhostname.vavyskov.cz"
-ENV SMTP_USER=${UNSET}
-ENV SMTP_PASSWORD="password"
-ENV SMTP_METHOD="LOGIN"
-
+ENV IMAGE_MODE dev
+ENV DOCUMENT_ROOT /var/www/html/public
+ENV SSH_HOME /var/www
+ENV SSH_USER ssh
+ENV SSH_PASSWORD ssh
+ENV GIT_EMAIL my@email.com
+## Equivalent ways of writing a variable: ENV GIT_NAME=My\ Name | ENV GIT_NAME="My Name"
+## Attention: ENV GIT_NAME="" does not contain empty string, but contains ""
+ENV GIT_NAME My Name
+ENV SMTP_MAILHUB 192.168.99.100
+ENV SMTP_MAILHUB_PORT 1025
+ENV SMTP_DOMAIN vavyskov.cz
+ENV SMTP_HOSTNAME_FULL fullhostname.vavyskov.cz
+## A way, how to create an unset variable
+ENV SMTP_USER ${UNSET}
+ENV SMTP_PASSWORD password
+ENV SMTP_METHOD LOGIN
 ## Proxy server example: "http://user:password@proxy.example.com:8080"
 ENV PROXY_SERVER=${UNSET}
 
