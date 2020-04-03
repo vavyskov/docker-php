@@ -40,6 +40,9 @@ System tools:
 
 ---
 
+Fix:
+- msmtp (alpine.3.11/fpm) - "from address" send by PHP not work correctly
+
 ToDo:
 - Change variable notation by "alpine.3.11/fpm-ssh"
     - [x] alpine.3.11/fpm-ssh

@@ -137,7 +137,8 @@ RUN echo "PHP extension: uploadprogress" \
 
 RUN echo "Sendmail" \
 &&  apk add --no-cache msmtp \
-&&  echo 'sendmail_path = /usr/bin/msmtp -t' > /usr/local/etc/php/conf.d/mail.ini
+&&  echo 'sendmail_path = /usr/bin/msmtp -t --read-envelope-from' > /usr/local/etc/php/conf.d/mail.ini
+#&&  echo 'sendmail_path = /usr/bin/msmtp -t' > /usr/local/etc/php/conf.d/mail.ini
 ## Sendmail configuraton viz entrypoint.sh
 
 ## MongoDB - missing in oficial repository (in this repository is old version)
