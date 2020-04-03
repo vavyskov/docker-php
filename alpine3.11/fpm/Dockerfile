@@ -149,6 +149,9 @@ RUN echo "Sendmail" \
 
 RUN echo "System tools" \
 &&  apk add --no-cache \
+        ## Certificates
+        ca-certificates \
+        openssl \
         ## Wordpress
         ghostscript
 
