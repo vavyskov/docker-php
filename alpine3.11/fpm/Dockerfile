@@ -1,9 +1,25 @@
 ARG PHP_VERSION=7.4
+ARG ALPINE_VERSION=3.11
 
-FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine3.11
+FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine${ALPINE_VERSION}
 
-ENV USER_HOME=/var/www
-ENV DOCUMENT_ROOT=/var/www/html/public
+ENV PROJECT_MODE dev
+ENV DOCUMENT_ROOT /var/www/html/public
+ENV PHP_USER_HOME /var/www
+ENV PHP_USER_NAME ssh
+ENV GIT_EMAIL my@email.com
+## Equivalent ways of writing a variable: ENV GIT_NAME=My\ Name | ENV GIT_NAME="My Name"
+## Attention: ENV GIT_NAME="" does not contain empty string, but contains ""
+ENV GIT_NAME My Name
+ENV SMTP_MAILHUB 192.168.99.100
+ENV SMTP_MAILHUB_PORT 1025
+ENV SMTP_DOMAIN vavyskov.cz
+## A way, how to create an unset variable
+ENV SMTP_USER ${UNSET}
+ENV SMTP_PASSWORD password
+ENV SMTP_METHOD LOGIN
+## Proxy server example: "http://user:password@proxy.example.com:8080"
+ENV PROXY_SERVER=${UNSET}
 
 ## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
 RUN echo "PHP extension: mysqli pdo_mysql" \
@@ -26,7 +42,7 @@ RUN echo "PHP extension: bcmath" \
 
 ## PHP extension: gd (other librarires: libjpeg-turbo-dev libwebp-dev zlib-dev libxpm-dev)
 RUN echo "PHP extension: gd" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         libpng-dev \
 &&  apk add --no-cache \
         libpng \
@@ -34,16 +50,16 @@ RUN echo "PHP extension: gd" \
 &&  apk del --purge .build-deps
 
 RUN echo "PHP extension: zip" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         libzip-dev \
-#&&  apk add --no-cache \
-#        libzip \
-#&&  docker-php-ext-configure zip --with-libzip \
+&&  apk add --no-cache \
+        libzip \
 &&  docker-php-ext-install zip \
 &&  apk del --purge .build-deps
 
+## ToDo: ICU 65.1 (now 64.2)
 RUN echo "PHP extension: intl" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         icu-dev \
 &&  apk add --no-cache \
         icu-libs \
@@ -53,7 +69,7 @@ RUN echo "PHP extension: intl" \
 &&  apk del --purge .build-deps
 
 RUN echo "PHP extension: ldap" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         openldap-dev \
 &&  apk add --no-cache \
         libldap \
@@ -62,7 +78,7 @@ RUN echo "PHP extension: ldap" \
 &&  apk del --purge .build-deps
 
 RUN echo "PHP extension: pgsql pdo_pgsql" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         postgresql-dev \
         #postgresql-client \
 &&  apk add --no-cache \
@@ -73,7 +89,7 @@ RUN echo "PHP extension: pgsql pdo_pgsql" \
 &&  apk del --purge .build-deps
 
 RUN echo "PHP extension: imagick" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         ${PHPIZE_DEPS} \
         imagemagick-dev \
 &&  apk add --no-cache \
@@ -84,7 +100,7 @@ RUN echo "PHP extension: imagick" \
 &&  apk del --purge .build-deps
 
 RUN echo "PHP extension: apcu" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         ${PHPIZE_DEPS} \
 &&  pecl install apcu \
 &&  docker-php-ext-enable apcu \
@@ -92,7 +108,7 @@ RUN echo "PHP extension: apcu" \
 &&  apk del --purge .build-deps
 
 RUN echo "PHP extension: mongodb" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         ${PHPIZE_DEPS} \
         #openssl-dev \
         #pcre-dev \
@@ -101,74 +117,69 @@ RUN echo "PHP extension: mongodb" \
 &&  pecl clear-cache \
 &&  apk del --purge .build-deps
 
-RUN echo "PHP extension:  xdebug" \
-&&  apk add --no-cache --update --virtual .build-deps \
-        ${PHPIZE_DEPS} \
-&&  pecl install xdebug \
-&&  docker-php-ext-enable xdebug \
-&&  pecl clear-cache \
-&&  apk del --purge .build-deps \
-&&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini
+#RUN echo "PHP extension:  xdebug" \
+#&&  apk add --no-cache --virtual .build-deps \
+#        ${PHPIZE_DEPS} \
+#&&  pecl install xdebug \
+#&&  docker-php-ext-enable xdebug \
+#&&  pecl clear-cache \
+#&&  apk del --purge .build-deps \
+#&&  echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN echo "PHP extension: uploadprogress" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         git \
 &&  git clone https://github.com/php/pecl-php-uploadprogress/ /usr/src/php/ext/uploadprogress/ \
 &&  docker-php-ext-install uploadprogress \
 &&  rm -fr /usr/src/php/ext/uploadprogress \
 &&  apk del --purge .build-deps
 
-
-
-## Set recommended PHP.ini settings
-RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-#RUN mv $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
-#RUN { \
-#        echo 'opcache.max_accelerated_files=10000'; \
-#    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
-#
-### Configure error logging
-#RUN { \
-#        echo 'error_log = /dev/stderr'; \
-#    } > /usr/local/etc/php/conf.d/error-logging.ini
-COPY config/php-development.ini /usr/local/etc/php/conf.d/
-
-
-
-## Composer (get path command: which composer)
-#COPY --from=composer /usr/bin/composer /usr/bin/composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+## php.ini configuration viz entrypoint.sh
 
 RUN echo "Sendmail" \
 &&  apk add --no-cache ssmtp \
-&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini \
-&&  { \
-        echo 'mailhub=192.168.99.100:1025'; \
-        echo 'FromLineOverride=YES'; \
-    } > /etc/ssmtp/ssmtp.conf
-#COPY config/ssmtp.conf /etc/ssmtp
+&&  echo 'sendmail_path = /usr/sbin/ssmtp -t' > /usr/local/etc/php/conf.d/mail.ini
+## Sendmail configuraton viz entrypoint.sh
 
-RUN echo "nodejs yarn" \
-&&  apk add --no-cache \
-        npm \
-        nodejs \
-&&  npm install -g yarn
+## MongoDB - missing in oficial repository (in this repository is old version)
+#RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories \
+#&&  apk add --no-cache \
+#        mongodb \
+#        mongodb-tools
 
 RUN echo "System tools" \
 &&  apk add --no-cache \
+        ## Wordpress
         ghostscript
 
 ## Create document root
-RUN mkdir -p "${DOCUMENT_ROOT}"
+#RUN mkdir -p "${DOCUMENT_ROOT}"
 
 RUN echo "Default data" \
-&&  apk add --no-cache --update --virtual .build-deps \
+&&  apk add --no-cache --virtual .build-deps \
         git \
 &&  git clone https://gitlab.com/vavyskov/webserver-info.git /tmp/webserver-info \
 &&  cp -R /tmp/webserver-info/src/. ${DOCUMENT_ROOT} \
-&&  rm ${DOCUMENT_ROOT}/index.html \
+#&&  rm ${DOCUMENT_ROOT}/index.html \
 &&  rm -fr /tmp/webserver-info \
-&&  apk del --purge .build-deps
+&&  apk del --purge .build-deps \
+&&  chown -R 82:82 ${DOCUMENT_ROOT}
 
 ## Set permission (82 is the standard uid/gid for "www-data" in Alpine)
-RUN chown -R 82:82 ${USER_HOME}
+#RUN chown -R 82:82 ${PHP_USER_HOME}
+
+## Initialize container
+COPY config/entrypoint.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+#ENTRYPOINT	[ "entrypoint.sh", "docker-php-entrypoint" ]
+
+WORKDIR /var/www
+
+EXPOSE 9000
+
+#COPY wait-for-it.sh /usr/bin/wait-for-it
+#RUN chmod +x /usr/bin/wait-for-it
+
+#CMD composer install; wait-for-it database:3306 -- bin/console doctrine:migrations:migrate; php-fpm
+CMD ["php-fpm"]
