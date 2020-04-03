@@ -15,7 +15,6 @@ ENV GIT_NAME My Name
 ENV SMTP_MAILHUB 192.168.99.100
 ENV SMTP_MAILHUB_PORT 1025
 ENV SMTP_DOMAIN vavyskov.cz
-ENV SMTP_HOSTNAME_FULL fullhostname.vavyskov.cz
 ## A way, how to create an unset variable
 ENV SMTP_USER ${UNSET}
 ENV SMTP_PASSWORD password
@@ -155,7 +154,7 @@ RUN echo "nodejs yarn" \
 
 RUN echo "SSH" \
 &&  apk add --no-cache \
-        openssh \
+        openssh-server \
         #bash \
 &&  ssh-keygen -A \
 #&&  sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config \

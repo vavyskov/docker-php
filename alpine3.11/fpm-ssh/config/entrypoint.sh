@@ -155,7 +155,7 @@ else
         echo '# root=postmaster@project-name.local'; \
         echo "mailhub=${SMTP_MAILHUB}:${SMTP_MAILHUB_PORT}"; \
         echo "rewriteDomain=${SMTP_DOMAIN}"; \
-        echo "hostname=${SMTP_HOSTNAME_FULL}"; \
+        echo "hostname=$(hostname -f)"; \
         echo '# TLS_CA_FILE=/etc/ssl/certs/ca-certificates.crt'; \
         echo '# UseTLS=YES'; \
         echo '# UseSTARTTLS=YES'; \
@@ -164,6 +164,18 @@ else
         echo "AuthMethod=${SMTP_METHOD}"; \
         echo 'FromLineOverride=YES'; \
     } > /etc/ssmtp/ssmtp.conf
+
+#    cat << EOF > /etc/ssmtp/ssmtp.conf
+#root=user@host.name
+#hostname=host.name
+#mailhub=smtp.host.name:465
+#FromLineOverride=YES
+#AuthUser=username@gmail.com
+#AuthPass=password
+#AuthMethod=LOGIN
+#UseTLS=YES
+#EOF
+
 fi
 
 ## Proxy (env | grep proxy)
