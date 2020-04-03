@@ -6,14 +6,14 @@ FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine${ALPINE_VERSION}
 ENV PROJECT_MODE dev
 ENV DOCUMENT_ROOT /var/www/html/public
 ENV PHP_HOME /var/www
-ENV PHP_USER ssh
+ENV PHP_USER user
 ENV GIT_EMAIL my@email.com
 ## Equivalent ways of writing a variable: ENV GIT_NAME=My\ Name | ENV GIT_NAME="My Name"
 ## Attention: ENV GIT_NAME="" does not contain empty string, but contains ""
 ENV GIT_NAME My Name
 ENV SMTP_MAILHUB 192.168.99.100
 ENV SMTP_MAILHUB_PORT 1025
-ENV SMTP_DOMAIN vavyskov.cz
+ENV SMTP_DOMAIN example.com
 ## A way, how to create an unset variable
 ENV SMTP_USER ${UNSET}
 ENV SMTP_PASSWORD password
