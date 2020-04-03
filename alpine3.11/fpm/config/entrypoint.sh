@@ -7,23 +7,23 @@ WEB_USER=$(getent passwd 82 | cut -d: -f1)
 WEB_GROUP=$(getent group 82 | cut -d: -f1)
 
 ## Simplification
-PHP_USER_GROUP=${PHP_USER_NAME}
+PHP_USER_GROUP=${PHP_USER}
 
 ## Change home
 ## From: www-data:x:82:82:Linux User,,,:/home/www-data:/sbin/nologin
 ## To:   www-data:x:82:82:Linux User,,,:/var/www:/sbin/nologin
 ## Syntax: sed -i "/SEARCH/s/FIND/REPLACE/" /etc/passwd
 sed -i "/82/s/home\/${WEB_USER}/var\/www/" /etc/passwd
-chown "${WEB_USER}":"${WEB_GROUP}" "${PHP_USER_HOME}"
+chown "${WEB_USER}":"${WEB_GROUP}" "${PHP_HOME}"
 
 ## Test if strings are not empty
-if [ -n "${PHP_USER_NAME}" ]; then
+if [ -n "${PHP_USER}" ]; then
 
     ## Test if users are not the same
-    if [ "${WEB_USER}" != "${PHP_USER_NAME}" ]; then
+    if [ "${WEB_USER}" != "${PHP_USER}" ]; then
 
         ## Change home
-        #mv /home/"${WEB_USER}" ${PHP_USER_HOME}"
+        #mv /home/"${WEB_USER}" ${PHP_HOME}"
 
         ## Change group
         ## From: www-data:x:82:www-data
@@ -35,16 +35,16 @@ if [ -n "${PHP_USER_NAME}" ]; then
         ## From: www-data:x:82:82:Linux User,,,:/var/www:/bin/sh
         ## To:   new-user:x:82:82:Linux User,,,:/var/www/bin/sh
         ## Syntax: sed -i "s/FIND/REPLACE/" /etc/passwd
-        sed -i "s/${WEB_USER}:x:82/${PHP_USER_NAME}:x:82/" /etc/passwd
+        sed -i "s/${WEB_USER}:x:82/${PHP_USER}:x:82/" /etc/passwd
 
     fi
 
     ## Create symbolic link
-    #ln -s /var/www/html "${PHP_USER_HOME}"/html
-    #chown -h "${PHP_USER_NAME}":"${PHP_USER_GROUP}" "${PHP_USER_HOME}"/html
+    #ln -s /var/www/html "${PHP_HOME}"/html
+    #chown -h "${PHP_USER}":"${PHP_USER_GROUP}" "${PHP_HOME}"/html
 
     ## Run php-fpm with proper user
-    sed -i "s/user = ${WEB_USER}/user = ${PHP_USER_NAME}/g" /usr/local/etc/php-fpm.d/www.conf
+    sed -i "s/user = ${WEB_USER}/user = ${PHP_USER}/g" /usr/local/etc/php-fpm.d/www.conf
     sed -i "s/group = ${WEB_GROUP}/group = ${PHP_USER_GROUP}/g" /usr/local/etc/php-fpm.d/www.conf
 
 #    ## Shell configuration - Proxy (env | grep proxy)
@@ -54,8 +54,8 @@ if [ -n "${PHP_USER_NAME}" ]; then
 #            echo "export http_proxy='${PROXY_SERVER}'"; \
 #            echo "export https_proxy='${PROXY_SERVER}'"; \
 #            echo "export ftp_proxy='${PROXY_SERVER}'"; \
-#        } >> "${PHP_USER_HOME}"/.bashrc
-#        chown "${PHP_USER_NAME}":"${PHP_USER_GROUP}" "${PHP_USER_HOME}"/.bashrc
+#        } >> "${PHP_HOME}"/.bashrc
+#        chown "${PHP_USER}":"${PHP_USER_GROUP}" "${PHP_HOME}"/.bashrc
 #    fi
 
 fi

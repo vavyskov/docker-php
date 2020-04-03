@@ -5,8 +5,8 @@ FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine${ALPINE_VERSION}
 
 ENV PROJECT_MODE dev
 ENV DOCUMENT_ROOT /var/www/html/public
-ENV PHP_USER_HOME /var/www
-ENV PHP_USER_NAME ssh
+ENV PHP_HOME /var/www
+ENV PHP_USER ssh
 ENV GIT_EMAIL my@email.com
 ## Equivalent ways of writing a variable: ENV GIT_NAME=My\ Name | ENV GIT_NAME="My Name"
 ## Attention: ENV GIT_NAME="" does not contain empty string, but contains ""
@@ -166,7 +166,7 @@ RUN echo "Default data" \
 &&  chown -R 82:82 ${DOCUMENT_ROOT}
 
 ## Set permission (82 is the standard uid/gid for "www-data" in Alpine)
-#RUN chown -R 82:82 ${PHP_USER_HOME}
+#RUN chown -R 82:82 ${PHP_HOME}
 
 ## Initialize container
 COPY config/entrypoint.sh /usr/local/bin/
