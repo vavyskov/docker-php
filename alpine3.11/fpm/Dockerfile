@@ -39,7 +39,6 @@ RUN echo "PHP extension: bcmath" \
 &&  docker-php-ext-install \
         bcmath
 
-## PHP extension: gd
 ## php -r 'print_r(gd_info());'
 RUN echo "PHP extension: gd" \
 &&  apk add --no-cache --virtual .build-deps \
