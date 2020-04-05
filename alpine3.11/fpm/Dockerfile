@@ -32,17 +32,16 @@ RUN echo "PHP extensions" \
         pdo_mysql mysqli \
         pdo_pgsql pgsql \
         mongodb \
+        ldap \
         gd \
         imagick \
-        ## PHP-FPM
-        ldap \
+        intl \
+        apcu \
         exif \
         bcmath \
         zip \
-        intl \
-        apcu \
         opcache \
-        ## PHP-CLI
+        ## PHP-CLI only
         #xdebug \
 &&  rm /usr/local/bin/install-php-extensions
 
