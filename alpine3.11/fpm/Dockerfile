@@ -21,28 +21,30 @@ ENV SMTP_PASSWORD password
 ENV PROXY_SERVER=${UNSET}
 
 ## https://github.com/mlocati/docker-php-extension-installer/
+## php -r 'print_r(gd_info());'
 RUN echo "PHP extensions" \
 &&  wget https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions \
 &&  mv install-php-extensions /usr/local/bin/ \
 &&  chmod +x /usr/local/bin/install-php-extensions \
 &&  sync \
 &&  install-php-extensions \
+        ## PHP-FPM + PHP-CLI
         pdo_mysql mysqli \
         pdo_pgsql pgsql \
         mongodb \
-        ldap \
         gd \
         imagick \
+        ## PHP-FPM
+        ldap \
         exif \
         bcmath \
         zip \
         intl \
         apcu \
         opcache \
+        ## PHP-CLI
         #xdebug \
 &&  rm /usr/local/bin/install-php-extensions
-
-## php -r 'print_r(gd_info());'
 
 ## ToDo: ICU 65.1 (now 64.2)
 
