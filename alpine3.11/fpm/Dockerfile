@@ -20,24 +20,25 @@ ENV SMTP_PASSWORD password
 ## Proxy server example: "http://user:password@proxy.example.com:8080"
 ENV PROXY_SERVER=${UNSET}
 
+## https://github.com/mlocati/docker-php-extension-installer/
 RUN echo "PHP extensions" \
 &&  wget https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions \
 &&  mv install-php-extensions /usr/local/bin/ \
 &&  chmod +x /usr/local/bin/install-php-extensions \
 &&  sync \
 &&  install-php-extensions \
-        mysqli pdo_mysql \
-        opcache \
+        pdo_mysql mysqli \
+        pdo_pgsql pgsql \
+        mongodb \
+        ldap \
+        gd \
+        imagick \
         exif \
         bcmath \
-        gd \
         zip \
         intl \
-        ldap \
-        pgsql pdo_pgsql \
-        imagick \
         apcu \
-        mongodb \
+        opcache \
         #xdebug \
 &&  rm /usr/local/bin/install-php-extensions
 
