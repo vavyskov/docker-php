@@ -152,7 +152,7 @@ else
         echo "from ${SMTP_FROM}"; \
         echo 'syslog on'; \
         echo 'logfile /var/log/msmtp.log'; \
-        echo 'auth on'; \
+        echo 'auth login'; \
         echo "user ${SMTP_USER}"; \
         echo "password ${SMTP_PASSWORD}"; \
         echo '#tls on'; \
@@ -168,7 +168,7 @@ else
 #from ${SMTP_FROM}
 #syslog on
 #logfile /var/log/msmtp.log
-#auth on
+#auth login
 #user ${SMTP_USER}
 #password ${SMTP_PASSWORD}
 ##tls on
