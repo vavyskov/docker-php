@@ -104,7 +104,8 @@ ENTRYPOINT ["entrypoint.sh"]
 
 WORKDIR /var/www
 
-EXPOSE 9000
+## Xdebug, Nginx
+EXPOSE 9000 9001
 
 #COPY wait-for-it.sh /usr/bin/wait-for-it
 #RUN chmod +x /usr/bin/wait-for-it
