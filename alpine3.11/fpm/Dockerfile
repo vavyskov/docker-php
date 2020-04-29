@@ -19,6 +19,8 @@ ENV SMTP_USER ${UNSET}
 ENV SMTP_PASSWORD password
 ## Proxy server example: "http://user:password@proxy.example.com:8080"
 ENV PROXY_SERVER=${UNSET}
+ENV XDEBUG_HOSTNAME=192.168.99.100
+ENV XDEBUG_PORT=9000
 
 ## https://github.com/mlocati/docker-php-extension-installer/
 ## php -r 'print_r(gd_info());'
@@ -28,7 +30,6 @@ RUN echo "PHP extensions" \
 &&  chmod +x /usr/local/bin/install-php-extensions \
 &&  sync \
 &&  install-php-extensions \
-        ## PHP-FPM + PHP-CLI
         pdo_mysql mysqli \
         pdo_pgsql pgsql \
         mongodb \
@@ -43,8 +44,7 @@ RUN echo "PHP extensions" \
         opcache \
         sockets \
         ssh2 \
-        ## PHP-CLI only
-        #xdebug \
+        xdebug \
         #bash \
 &&  rm /usr/local/bin/install-php-extensions
 
