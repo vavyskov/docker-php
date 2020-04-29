@@ -2,6 +2,9 @@
 ## Exit script if any command fails (non-zero status)
 set -e
 
+## Change FastCGI port
+sed -i "/listen/s/9000/${FASTCGI_PORT}/" /usr/local/etc/php-fpm.d/zz-docker.conf
+
 ## Get standard web user and group (standard uid/gid for "www-data" for Alpine: 82, for Debian: 33)
 WEB_USER=$(getent passwd 82 | cut -d: -f1)
 WEB_GROUP=$(getent group 82 | cut -d: -f1)
@@ -114,7 +117,7 @@ if [ "${PROJECT_MODE}" = "dev" ]; then
         #echo '[MongoDB]'; \
         #echo 'extension=mongo.so'; \
         #echo 'extension=mongodb.so'; \
-    } > /usr/local/etc/php/conf.d/zzz-overrides.ini
+    } > /usr/local/etc/php/conf.d/zz-overrides.ini
 
 else
 
@@ -138,7 +141,7 @@ else
     { \
       echo '[Time zone]'; \
       echo 'date.timezone = "Europe/Prague"'; \
-    } > /usr/local/etc/php/conf.d/zzz-overrides.ini
+    } > /usr/local/etc/php/conf.d/zz-overrides.ini
 
 fi
 

@@ -117,7 +117,7 @@ if [ "${IMAGE_MODE}" = "dev" ]; then
       #echo '[Drupal Commerce Kickstart]'; \
       #echo 'mbstring.http_input = pass'; \
       #echo 'mbstring.http_output = pass'; \
-    } > /usr/local/etc/php/conf.d/zzz-overrides.ini
+    } > /usr/local/etc/php/conf.d/zz-overrides.ini
 
 else
 
@@ -140,7 +140,7 @@ else
     ## Override recommended php.ini
     #{ \
     #  echo 'memory_limit = 128MB'; \
-    #} > /usr/local/etc/php/conf.d/zzz-overrides.ini
+    #} > /usr/local/etc/php/conf.d/zz-overrides.ini
 
 fi
 
