@@ -2,8 +2,17 @@ ARG PHP_VERSION=7.3
 
 FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine3.10
 
+ARG TZ=Europe/Prague
+
 ENV USER_HOME=/var/www
 ENV DOCUMENT_ROOT=/var/www/html/public
+
+RUN echo "Setting the timezone..." \
+&&  apk add --no-cache --virtual .build-deps \
+        tzdata \
+&&  cp /usr/share/zoneinfo/${TZ} /etc/localtime \
+#&&  ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
+&&  apk del --purge .build-deps
 
 ## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
 RUN echo "PHP extension: mysqli pdo_mysql" \

@@ -3,6 +3,8 @@ ARG ALPINE_VERSION=3.11
 
 FROM php:${PHP_VERSION:+${PHP_VERSION}-}fpm-alpine${ALPINE_VERSION}
 
+ARG TZ=Europe/Prague
+
 ENV IMAGE_MODE dev
 ENV DOCUMENT_ROOT /var/www/html/public
 ENV SSH_HOME /var/www
@@ -21,6 +23,13 @@ ENV SMTP_PASSWORD password
 ENV SMTP_METHOD LOGIN
 ## Proxy server example: "http://user:password@proxy.example.com:8080"
 ENV PROXY_SERVER=${UNSET}
+
+RUN echo "Setting the timezone..." \
+&&  apk add --no-cache --virtual .build-deps \
+        tzdata \
+&&  cp /usr/share/zoneinfo/${TZ} /etc/localtime \
+#&&  ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
+&&  apk del --purge .build-deps
 
 ## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
 RUN echo "PHP extension: mysqli pdo_mysql" \

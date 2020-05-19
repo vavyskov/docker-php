@@ -44,23 +44,29 @@ Fix:
 - msmtp (alpine.3.11/fpm) - "from address" send by PHP not work correctly
 
 ToDo:
-- Change variable notation by "alpine.3.11/fpm-ssh"
+- TimeZone:
+    - [x] alpine.3.11/fpm-ssh
+    - [x] alpine.3.11/fpm
+    - [x] alpine3.10
+    - [ ] buster
+    - [ ] stretch
+- Change variable notation by "alpine.3.11/fpm-ssh":
     - [x] alpine.3.11/fpm-ssh
     - [ ] alpine.3.11/fpm
     - [ ] alpine3.10
-    - [ ] buster, stretch
+    - [ ] buster
     - [ ] stretch
 - Sendmail IP and port as variables:
     - [x] alpine3.11/fpm-ssh
     - [ ] alpine.3.11/fpm
     - [ ] alpine3.10
-    - [ ] buster, stretch
+    - [ ] buster
     - [ ] stretch
 - Docker image mode (dev | prod):
     - [x] alpine3.11/fpm-ssh
     - [ ] alpine.3.11/fpm
     - [ ] alpine3.10
-    - [ ] buster, stretch
+    - [ ] buster
     - [ ] stretch
 - [msmtp](https://wiki.alpinelinux.org/wiki/Relay_email_to_gmail_(msmtp,_mailx,_sendmail)
 
