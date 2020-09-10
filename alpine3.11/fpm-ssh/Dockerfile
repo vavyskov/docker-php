@@ -31,6 +31,18 @@ RUN echo "Setting the timezone..." \
 #&&  ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
 &&  apk del --purge .build-deps
 
+## https://github.com/mlocati/docker-php-extension-installer/
+## php -r 'print_r(gd_info());'
+RUN echo "PHP extensions: soap xmlrpc" \
+&&  wget https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions \
+&&  mv install-php-extensions /usr/local/bin/ \
+&&  chmod +x /usr/local/bin/install-php-extensions \
+&&  sync \
+&&  install-php-extensions \
+        soap \
+        xmlrpc \
+&&  rm /usr/local/bin/install-php-extensions
+
 ## PHP extension: MySQL, MariaDB, Percona Server, or equivalent (Wordpress: mysqli, Drupal: pdo_mysql)
 RUN echo "PHP extension: mysqli pdo_mysql" \
 &&  docker-php-ext-install \

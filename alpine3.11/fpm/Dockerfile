@@ -54,6 +54,8 @@ RUN echo "PHP extensions" \
         opcache \
         sockets \
         ssh2 \
+        soap \
+        xmlrpc \
         xdebug \
         #bash \
 &&  rm /usr/local/bin/install-php-extensions
@@ -92,6 +94,12 @@ RUN echo "System tools" \
 
 ## Create document root
 #RUN mkdir -p "${DOCUMENT_ROOT}"
+
+RUN echo "nodejs yarn" \
+&&  apk add --no-cache \
+        npm \
+        nodejs \
+&&  npm install -g yarn
 
 RUN echo "Default data" \
 &&  apk add --no-cache --virtual .build-deps \
