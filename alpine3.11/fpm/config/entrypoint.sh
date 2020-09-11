@@ -64,6 +64,11 @@ if [ -n "${PHP_USER}" ]; then
 fi
 
 ## Image mode (dev | prod)
+if [ "${TIME_ZONE}" = "UTC" ]; then
+    rm /etc/localtime
+fi
+
+## Image mode (dev | prod)
 if [ "${PROJECT_MODE}" = "dev" ]; then
 
 #    ## Enable PHP extension

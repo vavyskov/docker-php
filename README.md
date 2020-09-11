@@ -44,16 +44,22 @@ Fix:
 - msmtp (alpine.3.11/fpm) - "from address" send by PHP not work correctly
 
 ToDo:
+- TimeZone:
+    - [x] alpine3.11/fpm
+    - [x] alpine3.11/fpm-ssh
+    - [x] alpine3.10 (doplnit entrypoint.sh)
+    - [ ] buster
+    - [ ] stretch
 - PHP extensions `soap` and `xmlrpc`:
     - [x] alpine3.11/fpm
     - [x] alpine3.11/fpm-ssh
     - [ ] alpine3.10
     - [ ] buster
     - [ ] stretch
-- TimeZone:
+- Project mode (dev | prod):
     - [x] alpine3.11/fpm
     - [x] alpine3.11/fpm-ssh
-    - [x] alpine3.10
+    - [ ] alpine3.10
     - [ ] buster
     - [ ] stretch
 - Change variable notation by "alpine.3.11/fpm-ssh":
@@ -63,12 +69,6 @@ ToDo:
     - [ ] buster
     - [ ] stretch
 - Sendmail IP and port as variables:
-    - [ ] alpine3.11/fpm
-    - [x] alpine3.11/fpm-ssh
-    - [ ] alpine3.10
-    - [ ] buster
-    - [ ] stretch
-- Docker image mode (dev | prod):
     - [ ] alpine3.11/fpm
     - [x] alpine3.11/fpm-ssh
     - [ ] alpine3.10
